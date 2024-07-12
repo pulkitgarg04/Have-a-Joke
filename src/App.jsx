@@ -19,12 +19,12 @@ function App() {
 
   const [language, setLanguage] = useState('en');
   const [blacklistedFlags, setBlacklistedFlags] = useState({
-    nsfw: false,
-    religious: false,
-    political: false,
-    racist: false,
-    sexist: false,
-    explicit: false,
+    nsfw: true,
+    religious: true,
+    political: true,
+    racist: true,
+    sexist: true,
+    explicit: true,
   });
 
   const handleCategoryChange = (e) => {
