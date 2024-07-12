@@ -7,30 +7,56 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [categories, setCategories] = useState({
+    any: false,
+    programming: false,
+    misc: false,
+    dark: false,
+    pun: false,
+    spooky: false,
+    christmas: false,
+  });
+
+  const [language, setLanguage] = useState('en');
+  const [blacklistedFlags, setBlacklistedFlags] = useState({
+    nsfw: false,
+    religious: false,
+    political: false,
+    racist: false,
+    sexist: false,
+    explicit: false,
+  });
+
+  const handleCategoryChange = (e) => {
+    setCategories({
+      ...categories,
+      [e.target.name]: e.target.checked,
+    });
+  };
+
+  const handleBlacklistChange = (e) => {
+    setBlacklistedFlags({
+      ...blacklistedFlags,
+      [e.target.id]: e.target.checked,
+    });
+  };
+
+  const handleLanguageChange = (e) => {
+    setLanguage(e.target.value);
+  };
+
   const fetchJoke = async () => {
     setLoading(true);
 
-    const categories = [];
-    if (document.getElementById('any').checked) categories.push('Any');
-    if (document.getElementById('programming').checked) categories.push('Programming');
-    if (document.getElementById('misc').checked) categories.push('Misc');
-    if (document.getElementById('dark').checked) categories.push('Dark');
-    if (document.getElementById('pun').checked) categories.push('Pun');
-    if (document.getElementById('spooky').checked) categories.push('Spooky');
-    if (document.getElementById('christman').checked) categories.push('Christmas');
+    // Construct the API URL based on selected inputs
+    const selectedCategories = Object.keys(categories).filter((key) => categories[key]);
+    const selectedBlacklistedFlags = Object.keys(blacklistedFlags).filter((key) => blacklistedFlags[key]);
 
-    const blacklistedFlags = [];
-    if (document.getElementById('nsfw').checked) blacklistedFlags.push('nsfw');
-    if (document.getElementById('religious').checked) blacklistedFlags.push('religious');
-    if (document.getElementById('political').checked) blacklistedFlags.push('political');
-    if (document.getElementById('racist').checked) blacklistedFlags.push('racist');
-    if (document.getElementById('sexist').checked) blacklistedFlags.push('sexist');
-    if (document.getElementById('explicit').checked) blacklistedFlags.push('explicit');
+    const categoriesParam = selectedCategories.length > 0 ? selectedCategories.join(',') : 'Any';
+    const flagsParam = selectedBlacklistedFlags.length > 0 ? `&blacklistFlags=${selectedBlacklistedFlags.join(',')}` : '';
+    const langParam = `&lang=${language}`;
 
-    const categoriesParam = categories.length > 0 ? categories.join(',') : 'Any';
-    const flagsParam = blacklistedFlags.length > 0 ? `&blacklistFlags=${blacklistedFlags.join(',')}` : '';
-
-    const url = `https://v2.jokeapi.dev/joke/${categoriesParam}?en${flagsParam}`;
+    const url = `https://v2.jokeapi.dev/joke/${categoriesParam}?${langParam}${flagsParam}`;
 
     try {
       const response = await axios.get(url);
@@ -55,29 +81,40 @@ function App() {
       <h2>Have a Joke!</h2>
       <div>
         <label htmlFor="category">Select from Category: </label>
-        <input type="checkbox" name="any" id="any" />
+        <input type="checkbox" name="any" checked={categories.any} onChange={handleCategoryChange} />
         <label htmlFor="any">Any</label>
-        <input type="checkbox" name="programming" id="programming" />
+        <input type="checkbox" name="programming" checked={categories.programming} onChange={handleCategoryChange} />
         <label htmlFor="programming">Programming</label>
-        <input type="checkbox" name="misc" id="misc" />
+        <input type="checkbox" name="misc" checked={categories.misc} onChange={handleCategoryChange} />
         <label htmlFor="misc">Misc</label>
-        <input type="checkbox" name="dark" id="dark" />
+        <input type="checkbox" name="dark" checked={categories.dark} onChange={handleCategoryChange} />
         <label htmlFor="dark">Dark</label>
-        <input type="checkbox" name="pun" id="pun" />
+        <input type="checkbox" name="pun" checked={categories.pun} onChange={handleCategoryChange} />
         <label htmlFor="pun">Pun</label>
-        <input type="checkbox" name="spooky" id="spooky" />
+        <input type="checkbox" name="spooky" checked={categories.spooky} onChange={handleCategoryChange} />
         <label htmlFor="spooky">Spooky</label>
-        <input type="checkbox" name="christman" id="christman" />
-        <label htmlFor="christman">Christmas</label>
+        <input type="checkbox" name="christmas" checked={categories.christmas} onChange={handleCategoryChange} />
+        <label htmlFor="christmas">Christmas</label>
+      </div>
+      <div>
+        <label htmlFor="language">Select Language: </label>
+        <select name="language" id="language" value={language} onChange={handleLanguageChange}>
+          <option value="cs">Czech</option>
+          <option value="de">German</option>
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="pt">Portuguese</option>
+        </select>
       </div>
       <div>
         <label htmlFor="flag">Select flag to blacklist: </label>
-        <input type="checkbox" id="nsfw" /><label htmlFor="nsfw">Nsfw</label>
-        <input type="checkbox" id="religious" /><label htmlFor="religious">Religious</label>
-        <input type="checkbox" id="political" /><label htmlFor="political">Political</label>
-        <input type="checkbox" id="racist" /><label htmlFor="racist">Racist</label>
-        <input type="checkbox" id="sexist" /><label htmlFor="sexist">Sexist</label>
-        <input type="checkbox" id="explicit" /><label htmlFor="explicit">Explicit</label>
+        <input type="checkbox" id="nsfw" checked={blacklistedFlags.nsfw} onChange={handleBlacklistChange} /><label htmlFor="nsfw">Nsfw</label>
+        <input type="checkbox" id="religious" checked={blacklistedFlags.religious} onChange={handleBlacklistChange} /><label htmlFor="religious">Religious</label>
+        <input type="checkbox" id="political" checked={blacklistedFlags.political} onChange={handleBlacklistChange} /><label htmlFor="political">Political</label>
+        <input type="checkbox" id="racist" checked={blacklistedFlags.racist} onChange={handleBlacklistChange} /><label htmlFor="racist">Racist</label>
+        <input type="checkbox" id="sexist" checked={blacklistedFlags.sexist} onChange={handleBlacklistChange} /><label htmlFor="sexist">Sexist</label>
+        <input type="checkbox" id="explicit" checked={blacklistedFlags.explicit} onChange={handleBlacklistChange} /><label htmlFor="explicit">Explicit</label>
       </div>
       <hr />
       {loading ? (
