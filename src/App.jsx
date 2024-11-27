@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import './App.css';
 
 function App() {
   const [joke, setJoke] = useState('');
@@ -8,7 +7,6 @@ function App() {
   const [error, setError] = useState(null);
 
   const [categories, setCategories] = useState({
-    any: false,
     programming: false,
     misc: false,
     dark: false,
@@ -48,7 +46,6 @@ function App() {
   const fetchJoke = async () => {
     setLoading(true);
 
-    // Construct the API URL based on selected inputs
     const selectedCategories = Object.keys(categories).filter((key) => categories[key]);
     const selectedBlacklistedFlags = Object.keys(blacklistedFlags).filter((key) => blacklistedFlags[key]);
 
@@ -77,55 +74,67 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <h2>Have a Joke!</h2>
-      <div>
-        <label htmlFor="category">Select from Category: </label>
-        <input type="checkbox" name="any" checked={categories.any} onChange={handleCategoryChange} />
-        <label htmlFor="any">Any</label>
-        <input type="checkbox" name="programming" checked={categories.programming} onChange={handleCategoryChange} />
-        <label htmlFor="programming">Programming</label>
-        <input type="checkbox" name="misc" checked={categories.misc} onChange={handleCategoryChange} />
-        <label htmlFor="misc">Misc</label>
-        <input type="checkbox" name="dark" checked={categories.dark} onChange={handleCategoryChange} />
-        <label htmlFor="dark">Dark</label>
-        <input type="checkbox" name="pun" checked={categories.pun} onChange={handleCategoryChange} />
-        <label htmlFor="pun">Pun</label>
-        <input type="checkbox" name="spooky" checked={categories.spooky} onChange={handleCategoryChange} />
-        <label htmlFor="spooky">Spooky</label>
-        <input type="checkbox" name="christmas" checked={categories.christmas} onChange={handleCategoryChange} />
-        <label htmlFor="christmas">Christmas</label>
+    <div className="app">
+      <div className="container">
+        <h1>Have a Laugh!</h1>
+        <div className="joke-box">
+          {loading ? (
+            <p className="loading">Loading</p>
+          ) : error ? (
+            <p className="error">{error}</p>
+          ) : (
+            <p className="joke">{joke}</p>
+          )}
+        </div>
+        <div className="controls">
+          <div className="section">
+            <h2>Categories</h2>
+            <div className="checkbox-group">
+              {Object.keys(categories).map((category) => (
+                <label key={category}>
+                  <input
+                    type="checkbox"
+                    name={category}
+                    checked={categories[category]}
+                    onChange={handleCategoryChange}
+                  />
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="section">
+            <h2>Language</h2>
+            <select value={language} onChange={handleLanguageChange}>
+              <option value="cs">Czech</option>
+              <option value="de">German</option>
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+              <option value="pt">Portuguese</option>
+            </select>
+          </div>
+          <div className="section">
+            <h2>Blacklist Flags</h2>
+            <div className="checkbox-group">
+              {Object.keys(blacklistedFlags).map((flag) => (
+                <label key={flag}>
+                  <input
+                    type="checkbox"
+                    id={flag}
+                    checked={blacklistedFlags[flag]}
+                    onChange={handleBlacklistChange}
+                  />
+                  {flag.charAt(0).toUpperCase() + flag.slice(1)}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+        <button className="fetch-btn" onClick={fetchJoke}>
+          Get Another Joke
+        </button>
       </div>
-      <div>
-        <label htmlFor="language">Select Language: </label>
-        <select name="language" id="language" value={language} onChange={handleLanguageChange}>
-          <option value="cs">Czech</option>
-          <option value="de">German</option>
-          <option value="en">English</option>
-          <option value="es">Spanish</option>
-          <option value="fr">French</option>
-          <option value="pt">Portuguese</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="flag">Select flag to blacklist: </label>
-        <input type="checkbox" id="nsfw" checked={blacklistedFlags.nsfw} onChange={handleBlacklistChange} /><label htmlFor="nsfw">Nsfw</label>
-        <input type="checkbox" id="religious" checked={blacklistedFlags.religious} onChange={handleBlacklistChange} /><label htmlFor="religious">Religious</label>
-        <input type="checkbox" id="political" checked={blacklistedFlags.political} onChange={handleBlacklistChange} /><label htmlFor="political">Political</label>
-        <input type="checkbox" id="racist" checked={blacklistedFlags.racist} onChange={handleBlacklistChange} /><label htmlFor="racist">Racist</label>
-        <input type="checkbox" id="sexist" checked={blacklistedFlags.sexist} onChange={handleBlacklistChange} /><label htmlFor="sexist">Sexist</label>
-        <input type="checkbox" id="explicit" checked={blacklistedFlags.explicit} onChange={handleBlacklistChange} /><label htmlFor="explicit">Explicit</label>
-      </div>
-      <hr />
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : (
-        <p>{joke}</p>
-      )}
-      <hr />
-      <button onClick={fetchJoke}>Get Another Joke</button>
     </div>
   );
 }
