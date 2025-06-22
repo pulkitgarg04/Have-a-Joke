@@ -64,13 +64,13 @@ Contributions are welcome! If you’d like to improve the app or add new feature
         git checkout -b feature-name  
         ```
 - Commit your changes:
-        ```bash
-        git commit -m "Add feature-name"  
-        ```
+  ```bash
+  git commit -m "Add feature-name"  
+  ```
 - Push to the branch:
-        ```bash
-        git push origin feature-name  
-        ```
+    ```bash
+    git push origin feature-name  
+    ```
 - Open a Pull Request.
 
 ## Acknowledgements
